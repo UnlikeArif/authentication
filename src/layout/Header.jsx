@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AppBar from '@mui/material/AppBar';
 import { Box, Grid } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
@@ -13,8 +13,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
+import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateProductsList } from '../redux/Slices/ProductSlice';
 const Header = () => {
+    const dispatch = useDispatch();
     const [productModal, setProductModal] = useState(false);
+    const { cartList } = useSelector((state) => state.product)
     const [product, setProduct] = useState({
         product_name: "",
         product_img_url: "",
@@ -25,8 +30,12 @@ const Header = () => {
         product_img_url: false,
         product_price: false
     })
-    // const [scroll, setScroll] = React.useState < DialogProps['scroll'] > ('paper');
 
+    const { productsList } = useSelector((state) => state.product);
+
+    useEffect(() => {
+        console.log(productsList);
+    }, [productsList])
     const handleClose = () => {
         setProductModal(false);
     }
@@ -56,21 +65,26 @@ const Header = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         // Form validation
-        let isValid = true;
-        for (const key in product) {
-            if (product[key].trim() === '') {
-                isValid = false;
-                setError({
-                    ...error,
-                    [key]: true
-                });
-            }
-        }
+        const newErrors = {
+            product_name: product.product_name.trim() === "",
+            product_img_url: product.product_img_url.trim() === "",
+            product_price: product.product_price.trim() === "",
+        };
 
-        // If form is valid, submit the form
+        setError(newErrors);
+
+        const isValid = !newErrors.product_name && !newErrors.product_img_url && !newErrors.product_price;
         if (isValid) {
             // Your form submission logic goes here
-            console.log("Form submitted:", product);
+            // alert("Form submitted: " + JSON.stringify(product));
+            dispatch(updateProductsList(product))
+            setProduct({
+                product_name: "",
+                product_img_url: "",
+                product_price: ""
+            });
+            setProductModal(false);
+            toast.success('Product Added Successfully');
         }
     }
     return (
@@ -82,7 +96,7 @@ const Header = () => {
                             MarKet Place
                         </Typography>
                         <Button color="error" variant="contained" sx={{ marginRight: 3 }} onClick={() => setProductModal(true)}>Add Product</Button>
-                        <Badge badgeContent={1} color="error">
+                        <Badge badgeContent={cartList.length} color="error">
                             <ShoppingCartIcon color="action" />
                         </Badge>
                     </Toolbar>
@@ -111,13 +125,13 @@ const Header = () => {
                         <DialogContent>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <TextField fullWidth label="Product Name" id="fullWidth" name="product_name" onChange={(event) => handleFormInputChange(event)} value={product.product_name} error={error.product_name} />
+                                    <TextField fullWidth label="Product Name" id="fullWidth" name="product_name" onChange={(event) => handleFormInputChange(event)} value={product.product_name} error={error.product_name} helperText={error?.product_name ? "product name is required" : ""} />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField fullWidth label="Product image Url" id="fullWidth" name="product_img_url" onChange={(event) => handleFormInputChange(event)} value={product.product_img_url} error={error.product_img_url} />
+                                    <TextField fullWidth label="Product image Url" id="fullWidth" name="product_img_url" onChange={(event) => handleFormInputChange(event)} value={product.product_img_url} error={error.product_img_url} helperText={error?.product_img_url ? "product image is required" : ""} />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField fullWidth label="Product Price" id="fullWidth" name="product_price" onChange={(event) => handleFormInputChange(event)} value={product.product_price} error={error.product_price} />
+                                    <TextField fullWidth label="Product Price" id="fullWidth" name="product_price" onChange={(event) => handleFormInputChange(event)} value={product.product_price} error={error.product_price} helperText={error?.product_price ? "product price is required" : ""} />
                                 </Grid>
                             </Grid>
                         </DialogContent>
