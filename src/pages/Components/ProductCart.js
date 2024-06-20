@@ -1,5 +1,5 @@
 import { Box, Button, Card, Typography } from '@mui/material'
-import React from 'react'
+import { React, useCallback } from 'react'
 import CardContent from '@mui/material/CardContent';
 import 'react-medium-image-zoom/dist/styles.css'
 import Zoom from 'react-medium-image-zoom'
@@ -16,42 +16,58 @@ const ProductCart = ({ product }) => {
 
     const isAddtocartview = () => {
         if (cartList.length > 0) {
-            return cartList.find((item) => item.id === product.id);
+            return cartList.find((item) => item?.id === product?.id);
         } else {
             return false;
         }
     }
 
-    const addtoCart = (Product) => {
-        let add_QtyProducts = { ...Product, qty: 1 }
-        dispatch(updateCartList([...cartList, add_QtyProducts]));
+    const itemToCart = useCallback((product, Qty) => {
+        let addToCartItem = [];
+        if (Qty != null) {
+            if (Qty === true) {
+                let newArr = [...cartList];
+                let QtyUpdateArr = newArr.map((val) => {
+                    if (val?.id === product.id) {
+                        return {
+                            ...val, qty: val.qty + 1
+                        }
+                    } else {
+                        return val;
+                    }
+                })
+                addToCartItem = QtyUpdateArr;
+            } else {
+                let cartArr = JSON.parse(JSON.stringify([...cartList]))
+                let cartIndex = cartArr.findIndex((val) => val.id === product.id);
+                if (cartIndex !== -1) {
+                    if (cartArr[cartIndex].qty - 1 == 0) {
+                        cartArr.splice(cartIndex, 1);
+                    } else {
+                        cartArr[cartIndex].qty = cartArr[cartIndex].qty - 1
+                    }
+                    addToCartItem = [...cartArr];
+                }
+            }
+
+        } else {
+            let add_QtyProducts = { ...product, qty: 1 }
+            addToCartItem = [...cartList, add_QtyProducts];
+        }
+        dispatch(updateCartList(addToCartItem));
+    }, [cartList])
+
+    const addtoCart = (product) => {
+        itemToCart(product, null);
     }
 
     const increaseClick = (product) => {
-        let QtyUpdateArr = cartList.map((val) => {
-            if (val.id === product.id) {
-                return {
-                    ...val, qty: val.qty + 1
-                }
-            }
-            return val;
-        })
-        dispatch(updateCartList(QtyUpdateArr));
+        itemToCart(product, true);
     }
 
     const descreaseClick = (product) => {
 
-        let cartArr = JSON.parse(JSON.stringify([...cartList]))
-        let cartIndex = cartArr.findIndex((val) => val.id === product.id);
-        if (cartIndex !== -1) {
-            if (cartArr[cartIndex].qty - 1 == 0) {
-                cartArr.splice(cartIndex, 1);
-            } else {
-                cartArr[cartIndex].qty = cartArr[cartIndex].qty - 1
-            }
-
-            dispatch(updateCartList([...cartArr]));
-        }
+        itemToCart(product, false);
     }
 
     return (

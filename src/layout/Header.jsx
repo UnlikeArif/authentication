@@ -16,7 +16,9 @@ import TextField from '@mui/material/TextField';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProductsList } from '../redux/Slices/ProductSlice';
+import { useNavigate } from 'react-router-dom';
 const Header = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [productModal, setProductModal] = useState(false);
     const { cartList } = useSelector((state) => state.product)
@@ -92,11 +94,11 @@ const Header = () => {
             <Box sx={{ flexGrow: 1, width: "100%" }}>
                 <AppBar position="static">
                     <Toolbar>
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} onClick={() => navigate('/')}>
                             MarKet Place
                         </Typography>
                         <Button color="error" variant="contained" sx={{ marginRight: 3 }} onClick={() => setProductModal(true)}>Add Product</Button>
-                        <Badge badgeContent={cartList.length} color="error">
+                        <Badge badgeContent={cartList.length} color="error" onClick={() => navigate('cart')}>
                             <ShoppingCartIcon color="action" />
                         </Badge>
                     </Toolbar>
