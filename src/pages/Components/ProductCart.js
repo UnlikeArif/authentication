@@ -57,19 +57,6 @@ const ProductCart = ({ product }) => {
         dispatch(updateCartList(addToCartItem));
     }, [cartList])
 
-    const addtoCart = (product) => {
-        itemToCart(product, null);
-    }
-
-    const increaseClick = (product) => {
-        itemToCart(product, true);
-    }
-
-    const descreaseClick = (product) => {
-
-        itemToCart(product, false);
-    }
-
     return (
         <Card >
             <CardContent sx={{ border: "1px solid #1976d2", borderTopRightRadius: "10%", borderTopLeftRadius: "10%" }}>
@@ -82,18 +69,18 @@ const ProductCart = ({ product }) => {
                 <Typography variant={'p'} sx={{ display: "flex", justifyContent: "center" }}>₹ {product.product_price}</Typography>
                 {isAddtocartview() ? (
                     <Box sx={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
-                        <Button variant='contained' size="small" color='error' style={{ minWidth: "20px", padding: "10px", borderRadius: "50%" }} onClick={() => descreaseClick(product)}><RemoveIcon fontSize="small" /></Button>
-                        <span style={{ width: "20px", border: "1px solid #1976d2", padding: "7px", borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center", margin: "0px 10px" }}>{isAddtocartview().qty}</span>
-                        <Button variant='contained' size="small" style={{ minWidth: "20px", padding: "10px", borderRadius: "50%" }} onClick={() => increaseClick(product)}><AddIcon fontSize="small" /></Button>
+                        <Button variant='contained' color='error' sx={{ height: "30px", minWidth: "30px !important", padding: "4px", borderRadius: "50%" }} onClick={() => itemToCart(product, false)}><RemoveIcon /></Button>
+                        <span style={{ width: "30px", height: "30px", border: "1px solid #1976d2", padding: "7px", borderRadius: "50%", display: "flex", justifyContent: "center", alignItems: "center", margin: "0px 10px" }}>{isAddtocartview().qty}</span>
+                        <Button variant='contained' sx={{ height: "30px", minWidth: "30px !important", padding: "4px", borderRadius: "50%" }} onClick={() => itemToCart(product, true)}><AddIcon /></Button>
                     </Box>
                 ) : (
                     <Box sx={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
-                        <Button color="primary" variant="contained" size='small' onClick={() => addtoCart(product)}>Add</Button>
+                        <Button color="primary" variant="contained" size='small' onClick={() => itemToCart(product, null)}>Add</Button>
                     </Box>
                 )}
 
             </CardContent>
-        </Card>
+        </Card >
     )
 }
 

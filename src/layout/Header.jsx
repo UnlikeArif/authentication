@@ -20,8 +20,8 @@ import { useNavigate } from 'react-router-dom';
 const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { productsList, cartList } = useSelector((state) => state.product);
     const [productModal, setProductModal] = useState(false);
-    const { cartList } = useSelector((state) => state.product)
     const [product, setProduct] = useState({
         product_name: "",
         product_img_url: "",
@@ -32,8 +32,6 @@ const Header = () => {
         product_img_url: false,
         product_price: false
     })
-
-    const { productsList } = useSelector((state) => state.product);
 
     useEffect(() => {
         console.log(productsList);
@@ -94,11 +92,11 @@ const Header = () => {
             <Box sx={{ flexGrow: 1, width: "100%" }}>
                 <AppBar position="static">
                     <Toolbar>
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} onClick={() => navigate('/')}>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: "pointer" }} onClick={() => navigate('/')}>
                             MarKet Place
                         </Typography>
                         <Button color="error" variant="contained" sx={{ marginRight: 3 }} onClick={() => setProductModal(true)}>Add Product</Button>
-                        <Badge badgeContent={cartList.length} color="error" onClick={() => navigate('cart')}>
+                        <Badge badgeContent={cartList.length} color="error" sx={{ cursor: "pointer" }} onClick={() => cartList.length > 0 ? navigate('cart') : ''}>
                             <ShoppingCartIcon color="action" />
                         </Badge>
                     </Toolbar>
